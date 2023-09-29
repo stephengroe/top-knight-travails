@@ -1,47 +1,48 @@
 function knightMoves(start, end) {
-  const move = new Move(start);
-  console.log(move);
+  console.log(`Traveling from [${start}] to [${end}]`);
+  const chessBoard = new Board([8, 8]);
+  console.log(chessBoard);
 }
 
-const movesSet = new Set();
+const uniqueMoves = new Set();
 
-class Move {
-  constructor(position) {
-    this.position = this.verifyCoordinate(position);
-    this.calculateMoves();
+class Board {
+  constructor([width, height] = [8,8]) {
+    this.squares = new Map();
+
+    for (let i=0; i<width; i++) {
+      for (let j=0; j<height; j++){
+        this.squares.set(`${i},${j}`, []);
+      }
+    }
+
+    this.generateMoves(this.squares);
   }
 
-  calculateMoves(position = this.position) {
+  generateMoves(squares = this.squares) {
+    squares.forEach((validMoves, positionString) => {
+      // Convert key (string) to coordinate array
+      let position = positionString.split(",");
+      position = position.map(num => Number(num));
 
-    if (position === null) return;
+      // Calculate valid knight moves
+      let totalMoves = [
+        [position[0] + 2, position[1] - 1],
+        [position[0] + 2, position[1] + 1],
+        [position[0] - 2, position[1] - 1],
+        [position[0] - 2, position[1] + 1],
+        [position[0] + 1, position[1] - 2],
+        [position[0] + 1, position[1] + 2],
+        [position[0] - 1, position[1] - 2],
+        [position[0] - 1, position[1] + 2]
+      ];
 
-    this.topLeft = new Move([position[0] + 2, position[1] - 1]);
-    this.topRight = new Move([position[0] + 2, position[1] + 1]);
-
-    this.bottomLeft = new Move([position[0] - 2, position[1] - 1]);
-    this.bottomRight = new Move([position[0] - 2, position[1] + 1]);
-
-    this.leftTop = new Move([position[0] + 1, position[1] - 2]);
-    this.leftBottom = new Move([position[0] - 1, position[1] - 2]);
-
-    this.rightTop = new Move([position[0] + 1, position[1] + 2]);
-    this.rightBottom = new Move([position[0] - 1, position[1] + 2]);
+      // Remove invalid coordinates
+      totalMoves = totalMoves.map(coordinate => coordinate.join());
+      validMoves.push(...totalMoves.filter(coordinate => squares.has(coordinate)));
+    });
   }
-
-  verifyCoordinate(coord) {
-    if (coord[0] < 0 || coord[0] > 7 || coord[1] < 0 || coord[1] > 7) return null;
-
-    // .join() required, otherwise all array instances are unique (and Set will fill indefinitely)
-    if (movesSet.has(coord.join())) return null;
-    movesSet.add(coord.join());
-    console.log(movesSet);
-    return coord;
-  }
-  
 }
-
 
 // Tests
-console.log(knightMoves([0,0],[1,2])); // [[0,0],[1,2]]
-console.log(knightMoves([0,0],[3,3])); // [[0,0],[1,2],[3,3]]
-console.log(knightMoves([3,3],[0,0])); // [[3,3],[1,2],[0,0]]
+console.log(knightMoves([4,4], [6, 3]));
