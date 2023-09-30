@@ -1,48 +1,79 @@
-function knightMoves(start, end) {
-  console.log(`Traveling from [${start}] to [${end}]`);
-  const chessBoard = new Board([8, 8]);
-  console.log(chessBoard);
+class Coordinate {
+  constructor(coordinates, parent) {
+    this.coordinates = coordinates;
+    this.parent = parent;
+  }
+
+  generateMoves(dimensions) {
+    this.nextMoves = [];
+    const knightSteps = [
+      [2, 1],
+      [2, -1],
+      [-2, 1],
+      [-2, -1],
+      [1, 2],
+      [1, -2],
+      [-1, -2],
+      [-1, 2]
+    ];
+
+    knightSteps.forEach(step => {
+      const x = this.coordinates[0] + step[0];
+      const y = this.coordinates[1] + step[1];
+      const coordinates = [x, y];
+
+      // Verify move is on the board
+      if (x < 0 || x >= dimensions[0] || y < 0 || y >= dimensions[1]) return;
+
+      // Add new moves to element
+      this.nextMoves.push(new Coordinate(coordinates, this));
+    })
+  }
 }
 
-const uniqueMoves = new Set();
+function knightMoves(board, startPosition, endPosition) {
+  if (startPosition === endPosition) return "No moves necessary!";
 
-class Board {
-  constructor([width, height] = [8,8]) {
-    this.squares = new Map();
+  const start = new Coordinate(startPosition, null);
+  const uniqueSet = new Set([start.coordinates.join(",")]);
+  const stack = [start];
+  const path = [endPosition];
 
-    for (let i=0; i<width; i++) {
-      for (let j=0; j<height; j++){
-        this.squares.set(`${i},${j}`, []);
+  while (stack.length > 0) {
+    const current = stack.shift();
+
+    if (current.coordinates.join(",") === endPosition.join(",")) {   
+      // If we've found the final square, push all parents to path!
+      let coordinate = current;
+      while(coordinate.parent !== null) {
+        path.unshift(coordinate.parent.coordinates);
+        coordinate = coordinate.parent;
+      }
+      break;
+    } else {
+      // Otherwise, generate children
+      current.generateMoves(board);
+
+      // Eliminate duplicates and add to stack
+      let uniqueMoves = current.nextMoves.filter(move => {
+        return !uniqueSet.has(move.coordinates.join(","));
+      });
+      stack.push(...uniqueMoves);
+
+      // Add to unique set
+      uniqueMoves = uniqueMoves.map(move => move.coordinates.join(","));
+      for (const move of uniqueMoves) {
+        uniqueSet.add(move);
       }
     }
-
-    this.generateMoves(this.squares);
   }
-
-  generateMoves(squares = this.squares) {
-    squares.forEach((validMoves, positionString) => {
-      // Convert key (string) to coordinate array
-      let position = positionString.split(",");
-      position = position.map(num => Number(num));
-
-      // Calculate valid knight moves
-      let totalMoves = [
-        [position[0] + 2, position[1] - 1],
-        [position[0] + 2, position[1] + 1],
-        [position[0] - 2, position[1] - 1],
-        [position[0] - 2, position[1] + 1],
-        [position[0] + 1, position[1] - 2],
-        [position[0] + 1, position[1] + 2],
-        [position[0] - 1, position[1] - 2],
-        [position[0] - 1, position[1] + 2]
-      ];
-
-      // Remove invalid coordinates
-      totalMoves = totalMoves.map(coordinate => coordinate.join());
-      validMoves.push(...totalMoves.filter(coordinate => squares.has(coordinate)));
-    });
-  }
+  return path;
 }
 
 // Tests
-console.log(knightMoves([4,4], [6, 3]));
+let chessBoard = [8,8];
+
+console.log(knightMoves(chessBoard, [2, 2], [4, 1]));
+console.log(knightMoves(chessBoard, [4, 4], [6, 3]));
+console.log(knightMoves(chessBoard, [4, 0], [6, 3]));
+console.log(knightMoves(chessBoard, [0, 0], [7, 7]));
