@@ -3,10 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="knight-travails.js" defer></script>
+  <script src="./knight-travails.js" defer></script>
+  <script src="./board.js" defer></script>
+  <link rel="stylesheet" href="./style.css">
   <title>Knight Travails</title>
 </head>
 <body>
-  
+  <div id="wrapper">
+    <div id="chessboard">
+      <div id="knight">
+      </div>
+    </div>
+
+    
+    <div id="data-wrapper">
+      <button id="add-knight">Place Knight</button>
+      <button id="grow">+1</button>
+      <output id="grid"></output>
+      <button id="shrink">-1</button>
+    </div>
+  </div>
+
 </body>
 </html>
