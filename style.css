@@ -60,7 +60,6 @@ body {
   text-align: center;
   display: block;
   z-index: 999;
-  content: "♞";
   font-size: var(--knight-font-size);
   width: var(--knight-width);
   position: absolute;
@@ -119,4 +118,6 @@ body {
   z-index: 999;
   transition-duration: 500ms;
   transition-property: left, bottom;
+
+  width: var(--knight-width);
 }
