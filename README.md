@@ -6,7 +6,7 @@ This is a little program that calculates the path a knight can take from any squ
 
 I completed this project as coursework for The Odin Project's Computer Science module ([assignment page](https://www.theodinproject.com/lessons/javascript-knights-travails)).
 
-* **Live demo:** https://stephengroe.github.io/knight-travails/
+* **Live demo:** https://stephengroe.github.io/top-knight-travails/
 * **Built with:** Vanilla JS, HTML5, CSS3
 * **License:** MIT
 
