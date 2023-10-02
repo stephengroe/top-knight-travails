@@ -1,5 +1,11 @@
+// Build the chessboard
 function buildChessboard(dimensions) {
   const board = document.querySelector("#chessboard");
+
+  while (board.firstChild) {
+    board.removeChild(board.firstChild);
+  }
+
   board.style.gridTemplate = `repeat(${dimensions[0]}, 1fr) / repeat(${dimensions[1]}, 1fr)`;
   let toggle = true;
 
@@ -19,19 +25,28 @@ function buildChessboard(dimensions) {
     }
     toggle = toggle ? false : true;
   }
+
+  const knight = document.createElement("div");
+  knight.setAttribute("id", "knight");
+  knight.textContent = "♞";
+  board.append(knight);
+
+  resizeKnight();
 }
 
+function resizeKnight() {
+  const square = document.querySelector(`[data-coordinates='0,0']`);
+
+  // Set knight's size and width :root variables to same as a square
+  const font = `${square.offsetHeight}px`;
+  const width = `${square.offsetWidth}px`;
+  document.documentElement.style.setProperty("--knight-font-size", font);
+  document.documentElement.style.setProperty("--knight-width", width);
+}
+
+// Move knight
 function moveKnight(coordinates) {
-  const position = coordinates.join(",");
-  const board = document.querySelector("#chessboard");
-  const square = document.querySelector(`[data-coordinates='${position}']`);
-
-  // Generate knight element
   const knight = document.querySelector("#knight");
-
-  // Set knight's size and width to same as a square
-  knight.style.fontSize = `${square.offsetHeight}px`;
-  knight.style.width = `${square.offsetWidth}px`;
 
   // Move based on square's location
   // (all relative, so works with window resizing!)
@@ -47,12 +62,61 @@ function getRandomCoordinate(dimensions) {
   return [x, y];
 }
 
+function placePiece(coordinateString) {
+  const chessboard = document.querySelector("#chessboard");
+  const coordinates = coordinateString.split(",");
+  
+  if (chessboard.classList.contains("place-knight")) {
+    moveKnight(coordinates);
+    chessboard.classList.remove("place-knight");
+    chessboard.classList.add("set-destination");
+    
+  } else if (chessboard.classList.contains("set-destination")) {
+    document.querySelector(`[data-coordinates='${coordinateString}']`)
+      .classList.add("destination");
+    chessboard.classList.remove("set-destination");
+  }
+}
+
+// Adjust board dimensions
+function changeDimensions(dimensions, increment, limits) {
+  let [x, y] = dimensions;
+  x += increment;
+  y += increment;
+
+  const [min, max] = limits;
+
+  if (x < min || y < min || x > max || y > max) return dimensions;
+  updateDimensionsOutput([x, y]);
+  return [x, y];
+}
+
+function updateDimensionsOutput(dimensions) {
+  const output = document.querySelector("#dimensions");
+  output.textContent = `${dimensions[0]} \xd7 ${dimensions[1]}`;
+}
+
 // Global variables
-const dimensions = [8, 8];
+let dimensions = [8, 8];
+const limits = [3, 16];
 buildChessboard(dimensions);
 moveKnight(getRandomCoordinate(dimensions));
 
+// Increment/decrement board dimensions
+document.querySelector("button#grow").addEventListener("click", (e) => {
+  dimensions = changeDimensions(dimensions, 1, limits);
+  buildChessboard(dimensions);
+});
 
-document.querySelector("button#add-knight").addEventListener("click", (e) => {
-  moveKnight(getRandomCoordinate(dimensions));
+document.querySelector("button#shrink").addEventListener("click", (e) => {
+  dimensions = changeDimensions(dimensions, -1, limits);
+  buildChessboard(dimensions);
+});
+
+// Create knight placement button bindings
+const squares = document.querySelectorAll("#chessboard .square");
+squares.forEach(square => {
+  square.addEventListener("click", (e) => {
+    placePiece(e.target.dataset.coordinates);
+  });
 });
