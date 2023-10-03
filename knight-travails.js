@@ -36,14 +36,14 @@ function generateMoves(board, startPosition, endPosition) {
   if (startPosition === endPosition) return "No moves necessary!";
 
   const start = new Coordinate(startPosition, null);
-  const uniqueSet = new Set([start.coordinates.join(",")]);
+  const uniqueSet = new Set([start.coordinates.toString()]);
   const stack = [start];
   const path = [endPosition];
 
   while (stack.length > 0) {
     const current = stack.shift();
 
-    if (current.coordinates.join(",") === endPosition.join(",")) {   
+    if (current.coordinates.toString() === endPosition.toString()) {   
       // If we've found the final square, push all parents to path!
       let coordinate = current;
       while(coordinate.parent !== null) {
@@ -57,12 +57,12 @@ function generateMoves(board, startPosition, endPosition) {
 
       // Eliminate duplicates and add to stack
       let uniqueMoves = current.nextMoves.filter(move => {
-        return !uniqueSet.has(move.coordinates.join(","));
+        return !uniqueSet.has(move.coordinates.toString());
       });
       stack.push(...uniqueMoves);
 
       // Add to unique set
-      uniqueMoves = uniqueMoves.map(move => move.coordinates.join(","));
+      uniqueMoves = uniqueMoves.map(move => move.coordinates.toString());
       for (const move of uniqueMoves) {
         uniqueSet.add(move);
       }
@@ -89,7 +89,7 @@ function animateMoves(moves) {
 
   // Animate each step at a time
   steps.forEach(step => {
-    const square = document.querySelector(`[data-coordinates='${step.join(",")}'`);
+    const square = document.querySelector(`[data-coordinates='${step.toString()}'`);
     square.classList.add("step");
 
     setTimeout(() => {
