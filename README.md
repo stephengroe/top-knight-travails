@@ -2,7 +2,7 @@
 
 **Calculates the shortest path on a chess board**
 
-This is a little program that calculates the path a knight can take from any square to another. It works on a board of any dimensions and has a worst-case runtime of O(n), where n = total number of squares.
+This is a little program that calculates the path a knight can take from any square to another. It works on a board of any dimensions and uses breadth-first graph search.
 
 I completed this project as coursework for The Odin Project's Computer Science module ([assignment page](https://www.theodinproject.com/lessons/javascript-knights-travails)).
 
